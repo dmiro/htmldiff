@@ -2,7 +2,13 @@
 
 [![Build Status](https://secure.travis-ci.org/edsu/htmldiff.png)](http://travis-ci.org/edsu/htmldiff)
 
-Usage: `htmldiff version1.html version2.html > diff.html`
+Usage:
+```
+htmldiff version1.html version2.html > diff.html
+htmldiff http://... version2.html > diff.html
+htmldiff http://... http://... > diff.html
+htmldiff version1.html http://... > diff.html
+```
 
 htmldiff outputs HTML that shows the differences in text between
 two versions of an HTML document. Differences in markup are not
@@ -40,7 +46,6 @@ this slightly better, at the price of less speed and more noise.
 
 * Add flag for "accurate" versus "risky" mode, see Limitations above
 * Allow diffing only of a given section by specifying an `id`
-* Allow input by URL
 * Make a web service
 * Get tests working again.
 
