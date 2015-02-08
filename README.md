@@ -26,7 +26,7 @@ two versions of an HTML document. Differences in markup are not
 shown.
 
 Original version is from [Ian Bicking](https://github.com/ianb)
-with changes from [Richard Cyganiak](https://github.com/cygri).
+with changes from [Richard Cyganiak](https://github.com/cygri), [Ed Summers](https://github.com/edsu) and [David Miró](https://github.com/dmiro).
 
 ## Requirements
 
