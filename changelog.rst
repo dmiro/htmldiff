@@ -1,3 +1,11 @@
+2015.2.07
+=========
+
+* Feature: Add parameter 'notags=True'
+* Add param 'self' to method html_encode.
+* Tests working again.
+* Improvement and extension passing arguments to the application.
+
 2015.2.06
 =========
 

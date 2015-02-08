@@ -1,2 +1,2 @@
 language: python
-script: python htmldiff test
+script: python htmldiff a b -test

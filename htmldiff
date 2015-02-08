@@ -13,15 +13,16 @@ Command-line usage:
 Better results if you use mxTidy first.  The output is HTML.
 """
 
-from difflib import SequenceMatcher
-import re
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+import re
 import cgi
 import urllib2
+import argparse
 from urlparse import urlparse
+from difflib import SequenceMatcher
 
 
 class HTMLMatcher(SequenceMatcher):
@@ -41,7 +42,7 @@ class HTMLMatcher(SequenceMatcher):
     def set_seq2(self, b):
         SequenceMatcher.set_seq2(self, self._split_html(b))
 
-    def html_encode(s, esc=cgi.escape):
+    def html_encode(self, s, esc=cgi.escape):
         return esc(s, 1)
 
     def _split_tags(self, t):
@@ -101,8 +102,8 @@ class HTMLMatcher(SequenceMatcher):
         if len(seq1) != len(seq2):
             return False
         for i in range(0, len(seq1)):
-            if seq1[i][0] == '<' and seq2[i][0] == '<':
-                continue
+            #if seq1[i][0] == '<' and seq2[i][0] == '<':
+            #    continue
             if self.wsRE.match(seq1[i]) and self.wsRE.match(seq2[i]):
                 continue
             if seq1[i] != seq2[i]:
@@ -191,38 +192,8 @@ class NoTagHTMLMatcher(HTMLMatcher):
         return ''
 
 
-def htmldiff(source1, source2, addstylesheet=False):
-    """
-    Return the difference between two pieces of HTML
-
-        >>> htmldiff('test1', 'test2')
-        '<span class="delete">test1 </span> <span class="insert">test2 </span> '
-        >>> htmldiff('test1', 'test1')
-        'test1 '
-        >>> htmldiff('<b>test1</b>', '<i>test1</i>')
-        '<span class="tagDelete">delete: <tt>&lt;b&gt;</tt></span> <span class="tagInsert">insert: <tt>&lt;i&gt;</tt></span> <i> test1 <span class="tagDelete">delete: <tt>&lt;/b&gt;</tt></span> <span class="tagInsert">insert: <tt>&lt;/i&gt;</tt></span> </i> '
-    """
-#    h = HTMLMatcher(source1, source2)
-    h = NoTagHTMLMatcher(source1, source2)
-    return h.html_diff(addstylesheet)
-
-
-def diff_resource(resource1, resource2):
-
-    def get_source(resource):
-        if urlparse(resource).netloc:
-            return urllib2.urlopen(resource).read()
-        else:
-            return open(resource).read()
-        
-    source1 = get_source(resource1)    
-    source2 = get_source(resource2)   
-    return htmldiff(source1, source2, True)
-
-
 class SimpleHTMLMatcher(HTMLMatcher):
-    """
-    Like HTMLMatcher, but returns a simpler diff
+    """Like HTMLMatcher, but returns a simpler diff
     """
     def start_insert_text(self):
         return '+['
@@ -241,19 +212,6 @@ class SimpleHTMLMatcher(HTMLMatcher):
 
     def format_delete_tag(self, tag):
         return '-[%s]' % tag
-
-
-def simplehtmldiff(source1, source2):
-    """
-    Simpler form of htmldiff; mostly for testing, like:
-
-        >>> simplehtmldiff('test1', 'test2')
-        '-[test1 ]+[test2 ]'
-        >>> simplehtmldiff('<b>Hello world!</b>', '<i>Hello you!</i>')
-        '-[<b>]+[<i>]<i> Hello -[world! ]-[</b>]+[you! ]+[</i>]</i> '
-    """
-    h = SimpleHTMLMatcher(source1, source2)
-    return h.html_diff()
 
 
 class TextMatcher(HTMLMatcher):
@@ -295,16 +253,76 @@ class TextMatcher(HTMLMatcher):
                 line = '&nbsp;' + line[1:]
             out.write('<tt>%s</tt><br>\n' % line)
 
+
+def html_diff(source1, source2, notags=True, addstylesheet=False):
+    """Return the difference between two pieces of HTML
+
+        >>> html_diff('test1', 'test2')
+        '<span class="delete">test1</span><span class="insert">test2</span>'
+        >>> html_diff('test1', 'test1')
+        'test1'
+        >>> html_diff('<b>test1</b>', '<i>test1</i>', notags=False)
+        '<span class="tagDelete">delete: <tt>&lt;b&gt;</tt></span><span class="tagInsert">insert: <tt>&lt;i&gt;</tt></span><i>test1<span class="tagDelete">delete: <tt>&lt;/b&gt;</tt></span><span class="tagInsert">insert: <tt>&lt;/i&gt;</tt></span></i>'
+        >>> html_diff('<b>test1</b>', '<b>test1</b><x>test1</x>', notags=False)
+        '<b>test1</b><span class="tagInsert">insert: <tt>&lt;x&gt;</tt></span><x><span class="insert">test1</span><span class="tagInsert">insert: <tt>&lt;/x&gt;</tt></span></x>'
+
+    """
+    if notags:
+        h = NoTagHTMLMatcher(source1, source2)
+    else:
+        h = HTMLMatcher(source1, source2)
+    return h.html_diff(addstylesheet)
+
+
+def simple_html_diff(source1, source2):
+    """Simpler form of htmldiff; mostly for testing, like:
+
+        >>> simple_html_diff('test1', 'test2')
+        '-[test1]+[test2]'
+        >>> simple_html_diff('<b>Hello world!</b>', '<i>Hello you!</i>')
+        '-[<b>]+[<i>]<i>Hello -[world!]-[</b>]+[you!]+[</i>]</i>'
+    """
+    h = SimpleHTMLMatcher(source1, source2)
+    return h.html_diff()
+
+
+def diff_resource(resource1, resource2, notags=True, addstylesheet=False, simplehtml=False):
+
+    def get_source(resource):
+        if urlparse(resource).netloc:
+            return urllib2.urlopen(resource).read()
+        else:
+            return open(resource).read()
+
+    source1 = get_source(resource1)
+    source2 = get_source(resource2)
+    if simplehtml:
+        return simple_html_diff(source1, source2)
+    else:
+        return html_diff(source1, source2, notags=notags, addstylesheet=addstylesheet)
+
+
 if __name__ == '__main__':
     import sys
-    if not sys.argv[1:]:
-        print "Usage: %s file1/url1 file2/url2" % sys.argv[0]
-        print "or to test: %s test" % sys.argv[0]
-    elif sys.argv[1] == 'test' and not sys.argv[2:]:
+
+    parser = argparse.ArgumentParser(description='outputs HTML that shows the differences in text between two versions '
+                                                 'of an HTML document. Differences in markup are not shown.')
+    parser.add_argument('resource1', help='File or URL to diff from')
+    parser.add_argument('resource2', help='File or URL to diff against')
+    parser.add_argument('-test', help='Test',
+                        action='store_true', required=False, default=False)
+    parser.add_argument('-ta', '--tags', help='Also compares the differences in tags',
+                        action='store_true', required=False, default=False)
+    parser.add_argument('-ss', '--stylesheet', help='Insert stylesheet to result',
+                        action='store_true', required=False, default=False)
+    parser.add_argument('-sh', '--simplehtml', help='Mostly for testing',
+                        action='store_true', required=False, default=False)
+    args = parser.parse_args()
+
+    if args.test:
         import doctest, sys
         results = doctest.testmod()
         if results.failed > 0:
             sys.exit(1)
     else:
-        print diff_resource(sys.argv[1], sys.argv[2])
-    
+        print diff_resource(args.resource1, args.resource2, not args.tags, args.stylesheet, args.simplehtml)

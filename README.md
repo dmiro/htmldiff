@@ -47,7 +47,6 @@ this slightly better, at the price of less speed and more noise.
 * Add flag for "accurate" versus "risky" mode, see Limitations above
 * Allow diffing only of a given section by specifying an `id`
 * Make a web service
-* Get tests working again.
 
 ## License
 
