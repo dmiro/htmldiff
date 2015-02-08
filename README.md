@@ -2,12 +2,23 @@
 
 [![Build Status](https://secure.travis-ci.org/edsu/htmldiff.png)](http://travis-ci.org/edsu/htmldiff)
 
-Usage:
+
 ```
-htmldiff version1.html version2.html > diff.html
-htmldiff http://... version2.html > diff.html
-htmldiff http://... http://... > diff.html
-htmldiff version1.html http://... > diff.html
+usage: htmldiff [-h] [-test] [-ta] [-ss] [-sh] resource1 resource2
+
+outputs HTML that shows the differences in text between two versions of an
+HTML document. Differences in markup are not shown.
+
+positional arguments:
+  resource1          File or URL to diff from
+  resource2          File or URL to diff against
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -test              Test
+  -ta, --tags        Also compares the differences in tags
+  -ss, --stylesheet  Insert stylesheet to result
+  -sh, --simplehtml  Mostly for testing
 ```
 
 htmldiff outputs HTML that shows the differences in text between
