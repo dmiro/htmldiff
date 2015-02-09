@@ -4,21 +4,23 @@
 
 
 ```
-usage: htmldiff [-h] [-test] [-ta] [-ss] [-sh] resource1 resource2
+usage: htmldiff [-h] [-test] [-ta] [-ss] [-sh] [-o OUTPUT] resource1 resource2
 
-outputs HTML that shows the differences in text between two versions of an
+Outputs HTML that shows the differences in text between two versions of an
 HTML document. Differences in markup are not shown.
 
 positional arguments:
-  resource1          File or URL to diff from
-  resource2          File or URL to diff against
+  resource1             File or URL to diff from
+  resource2             File or URL to diff against
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -test              Test
-  -ta, --tags        Also compares the differences in tags
-  -ss, --stylesheet  Insert stylesheet to result
-  -sh, --simplehtml  Mostly for testing
+  -h, --help            show this help message and exit
+  -test                 Test
+  -ta, --tags           Also compares the differences in tags
+  -ss, --stylesheet     Insert stylesheet to result
+  -sh, --simplehtml     Mostly for testing
+  -o OUTPUT, --output OUTPUT
+                        Output file
 ```
 
 htmldiff outputs HTML that shows the differences in text between
