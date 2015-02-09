@@ -1,3 +1,10 @@
+2015.2.08
+=========
+
+* Feature: Add argument '-output' to the application
+* Feature: Add setup.py
+* Rename 'htmldiff' to 'htmldiff.py' because 'py_module' argument in 'setup.py' require extension
+
 2015.2.07
 =========
 
