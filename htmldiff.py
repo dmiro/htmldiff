@@ -328,17 +328,16 @@ def main():
             sys.exit(1)
     else:
         result = diff_resource(args.resource1, args.resource2, not args.tags, args.stylesheet, args.simplehtml)
-
-    if args.output:
-        try:
-            dhtml = open(args.output, 'w')
-            dhtml.write(result)
-            dhtml.close()
-        except Exception, ex:
-            print ex
-            sys.exit(1)
-    else:
-        print result
+        if args.output:
+            try:
+                dhtml = open(args.output, 'w')
+                dhtml.write(result)
+                dhtml.close()
+            except Exception, ex:
+                print ex
+                sys.exit(1)
+        else:
+            print result
 
 
 if __name__ == '__main__':
