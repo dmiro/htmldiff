@@ -28,6 +28,18 @@ shown.
 Original version is from [Ian Bicking](https://github.com/ianb)
 with changes from [Richard Cyganiak](https://github.com/cygri), [Ed Summers](https://github.com/edsu) and [David Miró](https://github.com/dmiro).
 
+## Install
+
+```
+$ python setup.py install
+```
+
+Or via pip:
+
+```
+$ pip install .
+```
+
 ## Requirements
 
 * Python 2.7
